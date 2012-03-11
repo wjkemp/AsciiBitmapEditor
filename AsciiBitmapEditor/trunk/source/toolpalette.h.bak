@@ -1,0 +1,74 @@
+/******************************************************************************
+	toolpalette.h
+ ******************************************************************************/
+#ifndef __TOOLPALETTE_H__
+#define __TOOLPALETTE_H__
+
+#include <QWidget>
+#include <QSignalMapper>
+#include <QToolBox>
+#include <QToolButton>
+#include <QColor>
+#include <map>
+
+
+//-----------------------------------------------------------------------------
+//	Class Definition
+//-----------------------------------------------------------------------------
+class ToolPalette : public QWidget
+{
+    Q_OBJECT
+
+
+public:
+	ToolPalette(QWidget* parent = 0);
+	~ToolPalette();
+
+    unsigned char character() const { return _characterIndex; }
+    QColor foregroundColor() { return _foregroundColors[_foregroundColorIndex]; }
+    QColor backgroundColor() { return _backgroundColors[_backgroundColorIndex]; }
+
+
+protected slots:
+    void selectCharacterTool(int index);
+    void selectForegroundColorTool(int index);
+    void selectBackgroundColorTool(int index);
+
+signals:
+    void deselectCharacterTools(bool checked);
+    void deselectForegroundColorTools(bool checked);
+    void deselectBackgroundColorTools(bool checked);
+
+private:
+    QWidget* createAlphanumericPalette();
+    QWidget* createLinePalette();
+    QWidget* createSymbolPalette();
+    QWidget* createForegroundColorPalette();
+    QWidget* createBackgroundColorPalette();
+
+private:
+    QToolBox* _characterToolbox;
+    QToolBox* _foregroundColorToolbox;
+    QToolBox* _backgroundColorToolbox;
+
+    // Character
+    unsigned char _characterIndex;
+    QSignalMapper _characterMap;
+    std::map<int, QToolButton*> _characterButtons;
+
+    // Foreground Colors
+    int _foregroundColorIndex;
+    QSignalMapper _foregroundColorMap;
+    std::map<int, QToolButton*> _foregroundColorButtons;
+    std::map<int, QColor> _foregroundColors;
+
+    // Background Colors
+    int _backgroundColorIndex;
+    QSignalMapper _backgroundColorMap;
+    std::map<int, QToolButton*> _backgroundColorButtons;
+    std::map<int, QColor> _backgroundColors;
+
+};
+
+
+#endif

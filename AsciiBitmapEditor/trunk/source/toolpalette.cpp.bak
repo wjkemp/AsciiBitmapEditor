@@ -1,0 +1,313 @@
+/******************************************************************************
+	toolpalette.cpp
+ ******************************************************************************/
+#include "toolpalette.h"
+#include <QGridLayout>
+#include <QVBoxLayout>
+
+
+
+//-----------------------------------------------------------------------------
+ToolPalette::ToolPalette(QWidget* parent) :
+	QWidget(parent),
+    _characterIndex(0),
+    _foregroundColorIndex(0),
+    _backgroundColorIndex(0)
+{
+    _characterToolbox = new QToolBox();
+    _characterToolbox->addItem(createAlphanumericPalette(), "Alphanumeric");
+    _characterToolbox->addItem(createLinePalette(), "Lines");
+    _foregroundColorToolbox = new QToolBox();
+    _foregroundColorToolbox->addItem(createForegroundColorPalette(), "Foreground Colors");
+    _backgroundColorToolbox = new QToolBox();
+    _backgroundColorToolbox->addItem(createBackgroundColorPalette(), "Background Colors");
+    
+    QVBoxLayout* layout = new QVBoxLayout();
+    layout->addWidget(_characterToolbox);
+    layout->addWidget(_foregroundColorToolbox);
+    layout->addWidget(_backgroundColorToolbox);
+    layout->addStretch();
+    setLayout(layout);
+
+    connect(&_characterMap, SIGNAL(mapped(int)), SLOT(selectCharacterTool(int)));
+    connect(&_foregroundColorMap, SIGNAL(mapped(int)), SLOT(selectForegroundColorTool(int)));
+    connect(&_backgroundColorMap, SIGNAL(mapped(int)), SLOT(selectBackgroundColorTool(int)));
+
+}
+
+
+//-----------------------------------------------------------------------------
+ToolPalette::~ToolPalette()
+{
+
+}
+
+
+//-----------------------------------------------------------------------------
+void ToolPalette::selectCharacterTool(int index)
+{
+    _characterIndex = index;
+    deselectCharacterTools(false);
+    _characterButtons[index]->setChecked(true);
+}
+
+
+//-----------------------------------------------------------------------------
+void ToolPalette::selectForegroundColorTool(int index)
+{
+    _foregroundColorIndex = index;
+    deselectForegroundColorTools(false);
+    _foregroundColorButtons[index]->setChecked(true);
+}
+
+
+//-----------------------------------------------------------------------------
+void ToolPalette::selectBackgroundColorTool(int index)
+{
+    _backgroundColorIndex = index;
+    deselectBackgroundColorTools(false);
+    _backgroundColorButtons[index]->setChecked(true);
+}
+
+
+
+//-----------------------------------------------------------------------------
+QWidget* ToolPalette::createAlphanumericPalette()
+{
+    QWidget* widget = new QWidget();
+
+    QGridLayout* gridLayout = new QGridLayout();
+    QVBoxLayout* layout = new QVBoxLayout();
+    gridLayout->setSpacing(0);
+
+    int x = 0;
+    int y = 0;
+
+    for (int i='A'; i < 'z'; ++i) {
+        QString text;
+        text += (char)i;
+        QToolButton* toolButton = new QToolButton();
+        toolButton->setStyleSheet("font: 10pt \"Terminal\";");
+        toolButton->setCheckable(true);
+        toolButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
+        toolButton->setAutoRaise(true);
+        toolButton->setText(text);
+        toolButton->setMinimumWidth(30);
+        toolButton->setMinimumHeight(30);
+        connect(toolButton, SIGNAL(clicked()), &_characterMap, SLOT(map()));
+        connect(this, SIGNAL(deselectCharacterTools(bool)), toolButton, SLOT(setChecked(bool)));
+        _characterButtons[i] = toolButton;
+        _characterMap.setMapping(toolButton, i);
+        gridLayout->addWidget(toolButton, y, x);
+        x++;
+        if (x == 8) {
+            x = 0;
+            y++;
+        }
+    }
+
+    layout->addItem(gridLayout);
+    layout->addStretch();
+    widget->setLayout(layout);
+    return widget;
+}
+
+
+//-----------------------------------------------------------------------------
+QWidget* ToolPalette::createLinePalette()
+{
+    QWidget* widget = new QWidget();
+
+    QGridLayout* gridLayout = new QGridLayout();
+    QVBoxLayout* layout = new QVBoxLayout();
+    gridLayout->setSpacing(0);
+
+    int x = 0;
+    int y = 0;
+
+
+    unsigned char translation[] = 
+    {
+        218, 191, 192, 217, 196, 219,
+        213, 184, 212, 190, 205, 221,
+        214, 183, 211, 189, 179, 221,       
+        201, 187, 200, 188, 186, 222,
+
+        195, 180, 194, 193, 197, 223,
+        198, 181, 210, 208, 216, 176,
+        199, 182, 209, 207, 215, 177,
+        204, 185, 203, 202, 206, 178
+};
+
+
+
+
+
+    for (int i=0; i < sizeof(translation); ++i) {
+        int character = translation[i];
+        QString text;
+        text += (char)character;
+        QToolButton* toolButton = new QToolButton();
+        toolButton->setStyleSheet("font: 10pt \"Terminal\";");
+        toolButton->setCheckable(true);
+        toolButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
+        toolButton->setAutoRaise(true);
+        toolButton->setText(text);
+        toolButton->setMinimumWidth(30);
+        toolButton->setMinimumHeight(30);
+        connect(toolButton, SIGNAL(clicked()), &_characterMap, SLOT(map()));
+        connect(this, SIGNAL(deselectCharacterTools(bool)), toolButton, SLOT(setChecked(bool)));
+        _characterButtons[character] = toolButton;
+        _characterMap.setMapping(toolButton, character);
+        gridLayout->addWidget(toolButton, y, x);
+        x++;
+        if (x == 6) {
+            x = 0;
+            y++;
+        }
+    }
+
+
+    layout->addItem(gridLayout);
+    layout->addStretch();
+    widget->setLayout(layout);
+    return widget;
+}
+
+
+//-----------------------------------------------------------------------------
+QWidget* ToolPalette::createSymbolPalette()
+{
+
+    return 0;
+}
+
+
+//-----------------------------------------------------------------------------
+QWidget* ToolPalette::createForegroundColorPalette()
+{
+    QWidget* widget = new QWidget();
+    const int colorCount = 16;
+
+
+    // Add foreground colors to the map
+    _foregroundColors[0]  = QColor(0x00, 0x00, 0x00);
+    _foregroundColors[1]  = QColor(0x7F, 0x00, 0x00);
+    _foregroundColors[2]  = QColor(0x00, 0x7F, 0x00);
+    _foregroundColors[3]  = QColor(0x00, 0x00, 0x7F);
+    _foregroundColors[4]  = QColor(0x7F, 0x7F, 0x00);
+    _foregroundColors[5]  = QColor(0x00, 0x7F, 0x7F);
+    _foregroundColors[6]  = QColor(0x7F, 0x00, 0x7F);
+    _foregroundColors[7]  = QColor(0x7F, 0x7F, 0x7F);
+
+    _foregroundColors[8]  = QColor(0x00, 0x00, 0x00);
+    _foregroundColors[9]  = QColor(0xFF, 0x00, 0x00);
+    _foregroundColors[10] = QColor(0x00, 0xFF, 0x00);
+    _foregroundColors[11] = QColor(0x00, 0x00, 0xFF);
+    _foregroundColors[12] = QColor(0xFF, 0xFF, 0x00);
+    _foregroundColors[13] = QColor(0x00, 0xFF, 0xFF);
+    _foregroundColors[14] = QColor(0xFF, 0x00, 0xFF);
+    _foregroundColors[15] = QColor(0xfF, 0xFF, 0xFF);
+
+
+    QGridLayout* gridLayout = new QGridLayout();
+    QVBoxLayout* layout = new QVBoxLayout();
+    gridLayout->setSpacing(6);
+
+    int x = 0;
+    int y = 0;
+
+    for (int i=0; i < colorCount; ++i) {
+        QToolButton* toolButton = new QToolButton();
+        toolButton->setStyleSheet(QString("background: rgb(%1, %2, %3)").arg(_foregroundColors[i].red()).arg(_foregroundColors[i].green()).arg(_foregroundColors[i].blue()));
+        toolButton->setCheckable(true);
+        toolButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
+        toolButton->setMinimumWidth(30);
+        toolButton->setMinimumHeight(30);
+        connect(toolButton, SIGNAL(clicked()), &_foregroundColorMap, SLOT(map()));
+        connect(this, SIGNAL(deselectForegroundColorTools(bool)), toolButton, SLOT(setChecked(bool)));
+        _foregroundColorButtons[i] = toolButton;
+        _foregroundColorMap.setMapping(toolButton, i);
+        gridLayout->addWidget(toolButton, y, x);
+        x++;
+        if (x == 4) {
+            x = 0;
+            y++;
+        }
+    }
+
+    // Select a default
+    _foregroundColorIndex = 7;
+    _foregroundColorButtons[7]->setChecked(true);
+
+
+    layout->addItem(gridLayout);
+    layout->addStretch();
+    widget->setLayout(layout);
+    return widget;
+}
+
+
+
+//-----------------------------------------------------------------------------
+QWidget* ToolPalette::createBackgroundColorPalette()
+{
+    QWidget* widget = new QWidget();
+    const int colorCount = 16;
+
+
+    // Add background colors to the map
+    _backgroundColors[0]  = QColor(0x00, 0x00, 0x00);
+    _backgroundColors[1]  = QColor(0x7F, 0x00, 0x00);
+    _backgroundColors[2]  = QColor(0x00, 0x7F, 0x00);
+    _backgroundColors[3]  = QColor(0x00, 0x00, 0x7F);
+    _backgroundColors[4]  = QColor(0x7F, 0x7F, 0x00);
+    _backgroundColors[5]  = QColor(0x00, 0x7F, 0x7F);
+    _backgroundColors[6]  = QColor(0x7F, 0x00, 0x7F);
+    _backgroundColors[7]  = QColor(0x7F, 0x7F, 0x7F);
+
+    _backgroundColors[8]  = QColor(0x00, 0x00, 0x00);
+    _backgroundColors[9]  = QColor(0xFF, 0x00, 0x00);
+    _backgroundColors[10] = QColor(0x00, 0xFF, 0x00);
+    _backgroundColors[11] = QColor(0x00, 0x00, 0xFF);
+    _backgroundColors[12] = QColor(0xFF, 0xFF, 0x00);
+    _backgroundColors[13] = QColor(0x00, 0xFF, 0xFF);
+    _backgroundColors[14] = QColor(0xFF, 0x00, 0xFF);
+    _backgroundColors[15] = QColor(0xfF, 0xFF, 0xFF);
+
+
+    QGridLayout* gridLayout = new QGridLayout();
+    QVBoxLayout* layout = new QVBoxLayout();
+    gridLayout->setSpacing(6);
+
+    int x = 0;
+    int y = 0;
+
+    for (int i=0; i < colorCount; ++i) {
+        QToolButton* toolButton = new QToolButton();
+        toolButton->setStyleSheet(QString("background: rgb(%1, %2, %3)").arg(_backgroundColors[i].red()).arg(_backgroundColors[i].green()).arg(_backgroundColors[i].blue()));
+        toolButton->setCheckable(true);
+        toolButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
+        toolButton->setMinimumWidth(30);
+        toolButton->setMinimumHeight(30);
+        connect(toolButton, SIGNAL(clicked()), &_backgroundColorMap, SLOT(map()));
+        connect(this, SIGNAL(deselectBackgroundColorTools(bool)), toolButton, SLOT(setChecked(bool)));
+        _backgroundColorButtons[i] = toolButton;
+        _backgroundColorMap.setMapping(toolButton, i);
+        gridLayout->addWidget(toolButton, y, x);
+        x++;
+        if (x == 4) {
+            x = 0;
+            y++;
+        }
+    }
+
+    // Select a default
+    _backgroundColorIndex = 0;
+    _backgroundColorButtons[0]->setChecked(true);
+
+    layout->addItem(gridLayout);
+    layout->addStretch();
+    widget->setLayout(layout);
+    return widget;
+}
