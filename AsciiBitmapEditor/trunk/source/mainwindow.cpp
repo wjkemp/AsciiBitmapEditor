@@ -1,15 +1,35 @@
-/******************************************************************************
-	mainwindow.cpp
- ******************************************************************************/
+/*  mainwindow.cpp
+ *
+ *  Copyright (C) 2012 Willem Kemp <http://www.thenocturnaltree.com/>
+ *  All rights reserved.
+ *
+ *  This file is part of AsciiBitmapEditor.
+ *
+ *  AsciiBitmapEditor is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AsciiBitmapEditor is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with AsciiBitmapEditor. If not, see http://www.gnu.org/licenses/.
+ *
+ */
 #include "mainwindow.h"
 #include "bitmapeditor.h"
 #include "bitmapresizedialog.h"
 #include "bitmapexporter.h"
 #include "bitmapserializer.h"
 #include "documentwrapper.h"
+#include "version.h"
 #include <QDockWidget>
 #include <QMdiSubWindow>
 #include <QFileDialog>
+#include <QMessageBox>
 
 
 //-----------------------------------------------------------------------------
@@ -29,9 +49,17 @@ MainWindow::MainWindow() :
     connect(ui.actSaveBitmapAs, SIGNAL(activated()), SLOT(onSaveBitmapAs()));
     connect(ui.actResizeBitmap, SIGNAL(activated()), SLOT(onResizeBitmap()));
     connect(ui.actExport, SIGNAL(activated()), SLOT(onExportBitmap()));
+    connect(ui.actHelpAbout, SIGNAL(activated()), SLOT(onHelpAbout()));
 
     _cursorPosition = new QLabel();
     ui.statusbar->addPermanentWidget(_cursorPosition);
+
+
+    setWindowTitle(
+        QString("AsciiBitmapEditor [AsciiBitmapEditor ver %1.%2.%3]")
+        .arg(ASCIIBITMAPEDITOR_VERSION_MAJOR)
+        .arg(ASCIIBITMAPEDITOR_VERSION_MINOR)
+        .arg(ASCIIBITMAPEDITOR_VERSION_BUILD));
 }
 
 
@@ -132,6 +160,27 @@ void MainWindow::onResizeBitmap()
             bitmapEditor->resizeBitmap(dialog.width(), dialog.height());
         }
     }
+}
+
+//-----------------------------------------------------------------------------
+void MainWindow::onHelpAbout()
+{
+    QMessageBox::about(this, "About Ascii Bitmap Editor",
+        "Copyright (C) 2012 Willem Kemp  <http://www.thenocturnaltree.com/>.\n"
+        "All rights reserved.\n\n"
+
+        "AsciiBitmapEditor is free software: you can redistribute it and/or modify\n"
+        "it under the terms of the GNU General Public License as published by\n"
+        "the Free Software Foundation, either version 3 of the License, or\n"
+        "(at your option) any later version.\n\n"
+
+        "AsciiBitmapEditor is distributed in the hope that it will be useful,\n"
+        "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+        "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the\n"
+        "GNU General Public License for more details.\n\n"
+
+        "You should have received a copy of the GNU General Public License\n"
+        "along with AsciiBitmapEditor. If not, see http://www.gnu.org/licenses/.");
 }
 
 

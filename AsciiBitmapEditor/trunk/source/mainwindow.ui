@@ -52,8 +52,15 @@
     </property>
     <addaction name="actResizeBitmap"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actHelpAbout"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuHelp"/>
   </widget>
   <action name="actionPreferences">
    <property name="text">
@@ -88,6 +95,11 @@
   <action name="actSaveBitmapAs">
    <property name="text">
     <string>Save As</string>
+   </property>
+  </action>
+  <action name="actHelpAbout">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>

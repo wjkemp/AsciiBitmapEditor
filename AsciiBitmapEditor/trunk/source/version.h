@@ -1,4 +1,4 @@
-/*  backgroundcolortool.h
+/*  version.h
  *
  *  Copyright (C) 2012 Willem Kemp <http://www.thenocturnaltree.com/>
  *  All rights reserved.
@@ -19,25 +19,13 @@
  *  along with AsciiBitmapEditor. If not, see http://www.gnu.org/licenses/.
  *
  */
-#ifndef __BACKGROUNDCOLORTOOL_H__
-#define __BACKGROUNDCOLORTOOL_H__
-
-#include "colortool.h"
+#ifndef __VERSION_H__
+#define __VERSION_H__
 
 
-//-----------------------------------------------------------------------------
-//	Class Definition
-//-----------------------------------------------------------------------------
-class BackgroundColorTool : public ColorTool
-{
-
-public:
-    BackgroundColorTool();
-    ~BackgroundColorTool();
-    ToolUndoAction* doPrimaryFunction(Bitmap& bitmap, int x, int y);
-    ToolUndoAction* doSecondaryFunction(Bitmap& bitmap, int x, int y);
-
-};
+#define ASCIIBITMAPEDITOR_VERSION_MAJOR     1
+#define ASCIIBITMAPEDITOR_VERSION_MINOR     0
+#define ASCIIBITMAPEDITOR_VERSION_BUILD     0
 
 
 #endif
