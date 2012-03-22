@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>edit.png</file>
+    <file>foregroundcolor.png</file>
+    <file>backgroundcolor.png</file>
+  </qresource>
+</RCC>
